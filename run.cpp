@@ -111,7 +111,7 @@ long KTNS(const vector<int> processos, bool debug = false) {
     vector<int> currentToolLife = toolLife; // Tempo restante de vida das ferramentas
 
     if (debug) {
-        cout << std::endl << "Matriz de Ferramentas no KTNS" << std::endl;
+        cout << endl << "Matriz de Ferramentas no KTNS" << endl;
         for (unsigned j = 0; j < m; ++j) {
             for (unsigned i = 0; i < n; ++i) {
                 cout << matrix[j][i] << " ";
@@ -236,6 +236,15 @@ long KTNS(const vector<int> processos, bool debug = false) {
     // Contabilizar as trocas por desgaste
     // ...
     // ...
+
+    for(int i = 0; i < m; ++i) {
+        for(int j = 0; j < processos.size(); ++j)
+            cout << magazine[i][j] << " ";
+        cout << endl;
+    }
+
+    cout << endl << endl;
+
 
     if (debug) {
         cout << ": " << trocas << "trocas" << endl;
