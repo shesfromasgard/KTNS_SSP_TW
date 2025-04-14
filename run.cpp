@@ -288,11 +288,5 @@ long KTNS(vector<int> processos, bool debug = false) {
 
     } // Fim for i (loop principal de jobs)
 
-    // O retorno original era trocas + c. Isso pode incluir a carga inicial.
-    // Se você quer contar apenas as trocas *entre* jobs, retorne a soma.
-    // Se precisa replicar o comportamento original (contando carga inicial como 'c' trocas),
-    // talvez seja melhor retornar trocas_normais + trocas_desgaste.
-    // Vou retornar a soma das trocas, que é o mais comum. Ajuste se necessário.
-    // A carga inicial do primeiro job *não* está sendo contada como troca aqui.
-    return trocas_normais + trocas_desgaste;
+    return trocas_normais + trocas_desgaste + c;
 }
