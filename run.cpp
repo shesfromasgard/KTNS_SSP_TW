@@ -3,18 +3,15 @@
 #include <fstream>
 #include <numeric>
 #include <string>
-#include <algorithm> // Para std::max
+#include <algorithm>
 
 using namespace std;
 
-// --- Variáveis Globais (como antes) ---
 unsigned int m, n, c;
 vector<vector<int>> matrix;
 vector<int> toolLife;
-vector<int> executionTime; // Agora será usada corretamente
+vector<int> executionTime;
 
-// --- Declaração da função ---
-// Renomeando para clareza
 long KTNS(const vector<int>& processos, bool debug);
 
 int main() {
@@ -39,7 +36,6 @@ int main() {
     for (int i = 0; i < m; ++i)
         input >> toolLife[i];
 
-    // Corrigido na versão anterior, mantendo aqui
     for (int i = 0; i < n; ++i)
         input >> executionTime[i];
 
@@ -50,8 +46,7 @@ int main() {
     vector<int> processos(n);
     iota(processos.begin(), processos.end(), 0);
 
-    // Chama a nova função com desgaste e tempo de execução
-    output << KTNS(processos, false); // Use true para debug
+    output << KTNS(processos, false);
 
     input.close();
     output.close();
@@ -59,31 +54,27 @@ int main() {
     return 0;
 }
 
-
-// ======================================================================
-// KTNS Adaptado para Desgaste baseado no Tempo de Execução da Tarefa
-// ======================================================================
 long KTNS(const vector<int>& processos, bool debug = false) {
     if (processos.empty()) {
         return 0;
     }
 
-    vector<int> loaded(m, 0);            // Ferramentas carregadas (0 ou 1)
+    vector<int> loaded(m, 0);
     vector<int> remainingLife(m, 0);    // Vida útil restante das ferramentas carregadas
     int u = 0;                           // Contador de ferramentas carregadas
-    long trocas = 0;                     // Contador de trocas (capacidade ou desgaste)
+    long trocas = 0;                     // Contador de trocas
 
     vector<vector<int>> magazine(m, vector<int>(processos.size()));
     vector<vector<int>> priorities(m, vector<int>(processos.size()));
 
     for (unsigned j = 0; j < m; ++j) {
         for (unsigned i = 0; i < processos.size(); ++i) {
-            int current_task_id = processos[i];
-            if (current_task_id >= 0 && current_task_id < n) {
-                magazine[j][i] = matrix[j][current_task_id];
+            int currentTask = processos[i];
+            if (currentTask >= 0 && currentTask < n) {
+                magazine[j][i] = matrix[j][currentTask];
             } else {
                  magazine[j][i] = 0;
-                 if(debug) cerr << "Aviso: ID de tarefa inválido " << current_task_id << " no índice " << i << endl;
+                 if(debug) cerr << "Aviso: ID de tarefa inválido " << currentTask << " no índice " << i << endl;
             }
         }
     }
@@ -131,19 +122,16 @@ long KTNS(const vector<int>& processos, bool debug = false) {
         if (debug) cout << "  Estado Antes: u=" << u << ", trocas=" << trocas << endl;
 
         for (unsigned j = 0; j < m; ++j) {
-            if (magazine[j][i] == 1 && loaded[j] == 1) { // Ferramenta j necessária e carregada
-                // *** CONDIÇÃO DE DESGASTE ALTERADA ***
-                if (remainingLife[j] < taskExecTime) { // Não aguenta a execução!
+            if (magazine[j][i] == 1 && loaded[j] == 1) {
+                if (remainingLife[j] < taskExecTime) {
                     trocas++;
-                    remainingLife[j] = toolLife[j]; // Simula a troca por uma nova
+                    remainingLife[j] = toolLife[j];
                     if (debug) cout << "  (!) Troca PREDITIVA por DESGASTE: Ferramenta " << j << " (Vida: " << remainingLife[j] << " < " << taskExecTime << ") renovada. Novas trocas=" << trocas << endl;
                  }
 
             }
         }
 
-        // **B. Carregamento de Ferramentas Necessárias (se não carregadas):**
-        //    (Sem alterações lógicas aqui, apenas adicionando debug se quiser)
         for (unsigned j = 0; j < m; ++j) {
             if (magazine[j][i] == 1 && loaded[j] == 0) {
                 loaded[j] = 1;
@@ -153,21 +141,17 @@ long KTNS(const vector<int>& processos, bool debug = false) {
             }
         }
 
-        // **C. Remoção por Capacidade (Política KTNS):**
-        //    (Sem alterações lógicas aqui)
         while (u > c) {
              if (debug) cout << "  (!) Capacidade excedida: u=" << u << ", c=" << c << ". Procurando ferramenta para remover..." << endl;
              int maior_prio = -2;
              int pMaior = -1;
 
-             // Procura com prioridade -1
              for (unsigned j = 0; j < m; ++j) {
                  if (loaded[j] == 1 && magazine[j][i] != 1 && priorities[j][i] == -1) {
                       pMaior = j;
                       goto remove_tool_exec;
                  }
              }
-             // Procura a com maior prioridade
              maior_prio = -1;
              for (unsigned j = 0; j < m; ++j) {
                  if (loaded[j] == 1 && magazine[j][i] != 1) {
@@ -190,14 +174,10 @@ long KTNS(const vector<int>& processos, bool debug = false) {
                  if (debug) cerr << "  ERRO: Impossível remover ferramenta! u=" << u << ", c=" << c << endl;
                  break;
              }
-        } // Fim do while(u > c)
+        }
 
-
-        // **D. Decremento da Vida Útil APÓS o uso:**
-        //    Diminui a vida das ferramentas que foram USADAS nesta tarefa e AINDA ESTÃO CARREGADAS.
         for (unsigned j = 0; j < m; ++j) {
-            if (magazine[j][i] == 1 && loaded[j] == 1) { // Se foi usada e está carregada
-                // *** DECREMENTO ALTERADO ***
+            if (magazine[j][i] == 1 && loaded[j] == 1) {
                 remainingLife[j] -= taskExecTime;
                 if (debug) cout << "  (-) Vida útil da Ferramenta " << j << " decrementada por " << taskExecTime << " para " << remainingLife[j] << endl;
             }
@@ -209,7 +189,7 @@ long KTNS(const vector<int>& processos, bool debug = false) {
              cout << "   Life:   "; for(int l : remainingLife) cout << l << " "; cout << endl;
         }
 
-    } // Fim do loop for (tarefas)
+    }
 
     if (debug) {
         cout << "\n--- Fim da Simulação ---" << endl;
@@ -218,6 +198,5 @@ long KTNS(const vector<int>& processos, bool debug = false) {
         cout << "Resultado Final (trocas + c): " << trocas + c << endl;
     }
 
-    // Retorna o número de trocas (desgaste + capacidade) + carregamento inicial (c)
     return trocas + c;
 }
