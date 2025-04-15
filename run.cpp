@@ -108,8 +108,8 @@ long KTNS(const vector<int>& processos, bool debug = false) {
             }
         }
     } else {
-         if(debug) cerr << "Erro: Primeira tarefa inválida!" << endl;
-         return c;
+        if(debug) cerr << "Erro: Primeira tarefa inválida!" << endl;
+        return c;
     }
 
     for (unsigned i = 0; i < processos.size(); ++i) {
@@ -127,7 +127,7 @@ long KTNS(const vector<int>& processos, bool debug = false) {
                     trocas++;
                     remainingLife[j] = toolLife[j];
                     if (debug) cout << "  (!) Troca PREDITIVA por DESGASTE: Ferramenta " << j << " (Vida: " << remainingLife[j] << " < " << taskExecTime << ") renovada. Novas trocas=" << trocas << endl;
-                 }
+                }
 
             }
         }
@@ -142,37 +142,37 @@ long KTNS(const vector<int>& processos, bool debug = false) {
         }
 
         while (u > c) {
-             if (debug) cout << "  (!) Capacidade excedida: u=" << u << ", c=" << c << ". Procurando ferramenta para remover..." << endl;
-             int maior_prio = -2;
-             int pMaior = -1;
+            if (debug) cout << "  (!) Capacidade excedida: u=" << u << ", c=" << c << ". Procurando ferramenta para remover..." << endl;
+            int maior_prio = -2;
+            int pMaior = -1;
 
-             for (unsigned j = 0; j < m; ++j) {
-                 if (loaded[j] == 1 && magazine[j][i] != 1 && priorities[j][i] == -1) {
-                      pMaior = j;
-                      goto remove_tool_exec;
-                 }
-             }
-             maior_prio = -1;
-             for (unsigned j = 0; j < m; ++j) {
-                 if (loaded[j] == 1 && magazine[j][i] != 1) {
-                     if (priorities[j][i] > maior_prio) {
-                          maior_prio = priorities[j][i];
-                          pMaior = j;
+            for (unsigned j = 0; j < m; ++j) {
+                if (loaded[j] == 1 && magazine[j][i] != 1 && priorities[j][i] == -1) {
+                    pMaior = j;
+                    goto remove_tool_exec;
+                }
+            }
+            maior_prio = -1;
+            for (unsigned j = 0; j < m; ++j) {
+                if (loaded[j] == 1 && magazine[j][i] != 1) {
+                    if (priorities[j][i] > maior_prio) {
+                        maior_prio = priorities[j][i];
+                           pMaior = j;
                      }
                  }
              }
 
          remove_tool_exec:
              if (pMaior != -1) {
-                 if (debug) cout << "    -> Removendo Ferramenta " << pMaior << " (Prioridade: " << (pMaior < m ? priorities[pMaior][i] : -99) << ")" << endl;
-                 loaded[pMaior] = 0;
-                 remainingLife[pMaior] = 0;
-                 u--;
-                 trocas++;
-                 if (debug) cout << "     Nova contagem: u=" << u << ", trocas=" << trocas << endl;
+                if (debug) cout << "    -> Removendo Ferramenta " << pMaior << " (Prioridade: " << (pMaior < m ? priorities[pMaior][i] : -99) << ")" << endl;
+                loaded[pMaior] = 0;
+                remainingLife[pMaior] = 0;
+                u--;
+                trocas++;
+                if (debug) cout << "     Nova contagem: u=" << u << ", trocas=" << trocas << endl;
              } else {
-                 if (debug) cerr << "  ERRO: Impossível remover ferramenta! u=" << u << ", c=" << c << endl;
-                 break;
+                if (debug) cerr << "  ERRO: Impossível remover ferramenta! u=" << u << ", c=" << c << endl;
+                break;
              }
         }
 
@@ -184,9 +184,9 @@ long KTNS(const vector<int>& processos, bool debug = false) {
         }
 
         if (debug) {
-             cout << "  Estado Final Tarefa " << i << ": u=" << u << ", trocas=" << trocas << endl;
-             cout << "   Loaded: "; for(int l : loaded) cout << l << " "; cout << endl;
-             cout << "   Life:   "; for(int l : remainingLife) cout << l << " "; cout << endl;
+            cout << "  Estado Final Tarefa " << i << ": u=" << u << ", trocas=" << trocas << endl;
+            cout << "   Loaded: "; for(int l : loaded) cout << l << " "; cout << endl;
+            cout << "   Life:   "; for(int l : remainingLife) cout << l << " "; cout << endl;
         }
 
     }
