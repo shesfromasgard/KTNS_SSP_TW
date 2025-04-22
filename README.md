@@ -1,6 +1,6 @@
 # Keep Tools Needed Soonest (KTNS)
 
-O KTNS disponibilizado neste repositório é para resolução do subproblema de ferramentas (Tooling Problem, TP) do Problema de Sequenciamento de Tarefas e Trocas de Ferramentas com Desgaste de Ferramentas (Job Sequencing and Tool Switching Problem with Tool Wear, SSP-TW), uma variação do SSP uniforme [(Tang e Denardo, 1988)](https://www.jstor.org/stable/171322).
+O KTNS disponibilizado neste repositório é para resolução do subproblema de ferramentas (Tooling Problem, TP) do Problema de Sequenciamento de Tarefas e Trocas de Ferramentas com Desgaste de Ferramentas (Job Sequencing and Tool Switching Problem with Tool Wear, SSP-TW), uma variação do SSP uniforme ([Tang e Denardo, 1988](https://www.jstor.org/stable/171322)).
 
 Esse código foi adaptado do KTNS disponibilizado por [Soares e Carvalho (2020)](https://doi.org/10.1016/j.ejor.2020.02.047) para ser executado corretamente no Windows.
 
