@@ -6,12 +6,20 @@
 #include <algorithm>
 
 using namespace std;
+// ***************************************************
+// m = número de ferramentas
+// n = número de tarefas
+// c = capacidade do magazine
+// toolLife = tempo de vida últil de cada ferramenta nova
+// executionTime = tempo de execução de cada tarefa
+// matrix = matriz de ferramentas
+// ***************************************************
 
 unsigned int m, n, c;
 vector<vector<int>> matrix;
 vector<int> toolLife;
 vector<int> executionTime;
-vector<vector<int>> magazine;
+vector<vector<int>> historico;
 int trocas = 0;
 
 void KTNS(const vector<int> processos, bool debug);
@@ -41,7 +49,7 @@ int main() {
     KTNS(processos, false);
     wear(true);
 
-	cout << endl << endl << endl << endl;
+	cout << endl << endl;
 
     cout << trocas;
 
@@ -49,24 +57,29 @@ int main() {
 }
 
 void wear(bool debug = false) {
-    if(debug) {
-        cout << "Magazine" << endl << endl;
+	vector<int> remaining = toolLife;
 
-        for(int i = 0; i < m; ++i) {
-            for(int j = 0; j < n; ++j) {
-                cout << magazine[i][j] << " ";
+	for(int i = 0; i < m; ++i) {
+		for(int j = 0; j < n; ++j) {
+			if(historico[i][j] == 1) {
+				// Troca por desgaste
+				if(remaining[i] < executionTime[j]) {
+					remaining[i] = toolLife[i];
+					trocas++;
+				}
+				remaining[i] -= executionTime[j];
 			}
-			cout << endl;
 		}
-    }
+	}
 }
 
-void KTNS(const vector<int>processos, bool debug = false) {
+void KTNS(const vector<int> processos, bool debug = false) {
 
 	vector<int> carregadas(m,0);
 	int u = 0; // ferramentas no magazine
 	vector<vector<int>> prioridades(m, vector<int>(processos.size()));
-	magazine.resize(m, vector<int>(n));
+	vector<vector<int>> magazine(m, vector<int>(n));
+	historico.resize(m, vector<int>(n));
 
 	if (debug) {
         cout << endl << "Matriz de Ferramentas no KTNS" << endl;
@@ -137,6 +150,8 @@ void KTNS(const vector<int>processos, bool debug = false) {
         }
 	}
 
+	for(int j = 0; j < m; ++j)
+		historico[j][0] = carregadas[j];
 
 	// Calcula as trocas
 	if (debug) {
@@ -179,6 +194,10 @@ void KTNS(const vector<int>processos, bool debug = false) {
 				cout << trocas << " trocas " << endl;
 			}
 		}
+
+		for(int k = 0; k < m; ++k)
+			historico[k][i] = carregadas[k];
+		
 		if (debug) {
 		    cout << "Ferramentas carregadas: " << endl;
             for (unsigned j = 0; j < m; j++) {
