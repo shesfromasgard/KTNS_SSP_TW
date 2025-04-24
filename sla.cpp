@@ -41,28 +41,27 @@ int main() {
         for (int j = 0; j < n; ++j)
             cin >> matrix[i][j];
 
-    vector<int> processos(n);
+    vector<int> processos(n); // Sequência de tarefas a serem processadas
     iota(processos.begin(), processos.end(), 0);
 
-    cout << KTNS_Wear(processos, false) << endl; // Chamar a função adaptada
+    cout << KTNS_Wear(processos, false) << endl;
 
     return 0;
 }
 
-// Função KTNS adaptada para trocas por desgaste
-long KTNS_Wear(const vector<int> processos, bool debug) {
+long KTNS(const vector<int> processos, bool debug) {
 
-    vector<int> loaded(m, 0); // 0: não carregada, 1: carregada
-    int u = 0; // Ferramentas no magazine
-    vector<int> currentToolLife = toolLife; // Vida útil restante das ferramentas carregadas
+    vector<int> loaded(m, 0);
+    int u = 0;
+    vector<int> currentToolLife = toolLife;
 
     vector<vector<int>> priorities(m, vector<int>(processos.size()));
-    vector<vector<int>> magazine(m, vector<int>(processos.size())); // Matrix de ferramentas por processo na ordem
+    vector<vector<int>> magazine(m, vector<int>(processos.size()));
 
     if (debug) {
         cout << endl << "Matriz de Ferramentas no KTNS" << endl;
         for (unsigned j = 0; j < m; j++){
-            for (unsigned i = 0; i < n; ++i){ // Usar n aqui, não 8
+            for (unsigned i = 0; i < n; ++i){
                 cout << matrix[j][i] << " ";
             }
             cout << endl;
@@ -76,18 +75,16 @@ long KTNS_Wear(const vector<int> processos, bool debug) {
         cout << endl;
     }
 
-    // Preenche a matriz 'magazine' com base na ordem dos processos
     for (unsigned j = 0; j < m; j++) {
         for (unsigned i = 0; i < processos.size(); i++) {
              magazine[j][i] = matrix[j][processos[i]];
         }
     }
 
-    // Preenche a matriz de prioridades (quando cada ferramenta será necessária novamente)
     for (unsigned i = 0; i < m; ++i){
         for (unsigned j = 0; j < processos.size(); ++j){
             if (magazine[i][j] == 1)
-                priorities[i][j] = 0; // Necessária na tarefa atual
+                priorities[i][j] = 0;
             else {
                 int proxima = 0;
                 bool usa = false;
@@ -106,16 +103,10 @@ long KTNS_Wear(const vector<int> processos, bool debug) {
         }
     }
 
-    // Carregar ferramentas para a primeira tarefa (processos[0])
     for (unsigned j = 0; j < m; j++) {
-        if (magazine[j][0] == 1) { // Se a ferramenta j é necessária para a primeira tarefa
-            if (toolLife[j] >= executionTime[processos[0]]) { // Verificar vida útil inicial
-                loaded[j] = 1;
-                ++u;
-            } else {
-                 cerr << "Erro: Vida útil inicial da ferramenta " << j << " é insuficiente para a primeira tarefa " << processos[0] << "." << endl;
-                 return -1; // Indica um erro fatal no input
-            }
+        if (magazine[j][0] == 1) {
+            loaded[j] = 1;
+            ++u;
         }
     }
 

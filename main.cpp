@@ -62,7 +62,6 @@ void wear(bool debug = false) {
 	for(int i = 0; i < m; ++i) {
 		for(int j = 0; j < n; ++j) {
 			if(historico[i][j] == 1) {
-				// Troca por desgaste
 				if(remaining[i] < executionTime[j]) {
 					remaining[i] = toolLife[i];
 					trocas++;
