@@ -27,33 +27,33 @@ void wear(bool debug);
 
 int main() {
 
-    cin >> m >> n >> c;
+	cin >> m >> n >> c;
 
-    toolLife.resize(m);
-    executionTime.resize(n);
-    matrix.resize(m, vector<int>(n));
+	toolLife.resize(m);
+	executionTime.resize(n);
+	matrix.resize(m, vector<int>(n));
 
-    for (int i = 0; i < m; ++i)
-        cin >> toolLife[i];
+	for (int i = 0; i < m; ++i)
+		cin >> toolLife[i];
 
-    for (int i = 0; i < n; ++i)
-        cin >> executionTime[i];
+	for (int i = 0; i < n; ++i)
+		cin >> executionTime[i];
 
-    for (int i = 0; i < m; ++i)
-        for (int j = 0; j < n; ++j)
-            cin >> matrix[i][j];
+	for (int i = 0; i < m; ++i)
+		for (int j = 0; j < n; ++j)
+			cin >> matrix[i][j];
 
-    vector<int> processos(n);
-    iota(processos.begin(), processos.end(), 0);
+	vector<int> processos(n);
+	iota(processos.begin(), processos.end(), 0);
 
-    KTNS(processos, false);
-    wear(true);
+	KTNS(processos, false);
+	wear(true);
 
 	cout << endl << endl;
 
-    cout << trocas;
+	cout << trocas;
 
-    return 0;
+	return 0;
 }
 
 void wear(bool debug = false) {
@@ -82,20 +82,20 @@ void KTNS(const vector<int> processos, bool debug = false) {
 	historico.resize(m, vector<int>(n));
 
 	if (debug) {
-        cout << endl << "Matriz de Ferramentas no KTNS" << endl;
-        for (unsigned j = 0; j < m; j++){
-            for (unsigned i = 0; i<8; ++i){
-                cout << matrix[j][i] << " ";
-            }
-            cout << endl;
-        }
-        cout << " --------------------- " << endl;
-        cout << "Processos" << endl;
-        for (unsigned i = 0; i < processos.size(); i++) {
-            cout<< processos[i] << " ";
-        }
-        cout << endl;
-        cout << endl;
+		cout << endl << "Matriz de Ferramentas no KTNS" << endl;
+		for (unsigned j = 0; j < m; j++){
+			for (unsigned i = 0; i<8; ++i){
+				cout << matrix[j][i] << " ";
+			}
+			cout << endl;
+		}
+		cout << " --------------------- " << endl;
+		cout << "Processos" << endl;
+		for (unsigned i = 0; i < processos.size(); i++) {
+			cout<< processos[i] << " ";
+		}
+		cout << endl;
+		cout << endl;
 	}
 
 	for (unsigned j = 0; j < m; j++) {
@@ -110,7 +110,7 @@ void KTNS(const vector<int> processos, bool debug = false) {
 				}
 		}
 		if (debug) {
-            cout << endl;
+			cout << endl;
 		}
 	}
 	// Preenche a matriz de prioridades
@@ -136,18 +136,18 @@ void KTNS(const vector<int> processos, bool debug = false) {
 		}
 	}
 	if (debug) {
-        for (unsigned j = 0; j < m; j++) {
-            for (unsigned i =0; i < processos.size(); i++) {
-                    cout << prioridades[j][i] << " ";
-                }
-                cout << endl;
-        }
+		for (unsigned j = 0; j < m; j++) {
+			for (unsigned i =0; i < processos.size(); i++) {
+					cout << prioridades[j][i] << " ";
+				}
+				cout << endl;
+		}
 
-        cout << "Ferramentas carregadas: " << endl;
-        for (unsigned j = 0; j < m; j++) {
-            if (carregadas[j] == 33) exit(0);
-                    cout << carregadas[j] << endl;
-        }
+		cout << "Ferramentas carregadas: " << endl;
+		for (unsigned j = 0; j < m; j++) {
+			if (carregadas[j] == 33) exit(0);
+					cout << carregadas[j] << endl;
+		}
 	}
 
 	for(int j = 0; j < m; ++j)
@@ -155,7 +155,7 @@ void KTNS(const vector<int> processos, bool debug = false) {
 
 	// Calcula as trocas
 	if (debug) {
-	    cout << u << " carregadas na primeira tarefa" << endl;
+		cout << u << " carregadas na primeira tarefa" << endl;
 	}
 
 	for (unsigned i = 1; i < processos.size(); ++i) {
@@ -199,15 +199,15 @@ void KTNS(const vector<int> processos, bool debug = false) {
 			historico[k][i] = carregadas[k];
 		
 		if (debug) {
-		    cout << "Ferramentas carregadas: " << endl;
-            for (unsigned j = 0; j < m; j++) {
-                    cout << carregadas[j] << endl;
-            }
-	    }
+			cout << "Ferramentas carregadas: " << endl;
+			for (unsigned j = 0; j < m; j++) {
+					cout << carregadas[j] << endl;
+			}
+		}
 	}
 	if (debug) {
-	    cout << ": " << trocas << "trocas" << endl;
+		cout << ": " << trocas << "trocas" << endl;
 	}
 
-    trocas += c;
+	trocas += c;
 }
