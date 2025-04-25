@@ -1,0 +1,190 @@
+--- Inicializando para Tarefa 0 (ID: 0) ---
+  Carregada Ferramenta 1 (Vida Inicial: 1)
+  Carregada Ferramenta 4 (Vida Inicial: 0)
+  Carregada Ferramenta 5 (Vida Inicial: 0)
+
+--- Processando Tarefa 0 (ID: 0, Tempo: 0) ---
+  Estado Antes: u=3, trocas=0
+   Life Antes: 0 1 0 0 0 0 0 0 0 0 
+  (-) Vida útil da Ferramenta 1 decrementada por 0 para 1
+  (-) Vida útil da Ferramenta 4 decrementada por 0 para 0
+  (-) Vida útil da Ferramenta 5 decrementada por 0 para 0
+  Estado Final Tarefa 0: u=3, trocas=0
+   Carregadas: 0 1 0 0 1 1 0 0 0 0 
+   Life:       0 1 0 0 0 0 0 0 0 0 
+
+--- Processando Tarefa 1 (ID: 1, Tempo: 0) ---
+  Estado Antes: u=3, trocas=0
+   Life Antes: 0 1 0 0 0 0 0 0 0 0 
+  (+) Carregada Ferramenta 0 (Vida: 1). u=4
+  (+) Carregada Ferramenta 7 (Vida: 1). u=5
+  (!) Capacidade excedida: u=5, c=4. Procurando ferramenta para remover (Nova Politica)...
+    Candidata 1: Prio=1, NextTaskIdx=2, NextTaskID=2, NextTaskTime=0, CurrentLife=1, Metric=1
+    Candidata 4: Prio=1, NextTaskIdx=2, NextTaskID=2, NextTaskTime=0, CurrentLife=0, Metric=0
+    Melhor candidata pela nova politica: Ferramenta 4 (Metrica: 0)
+    -> Removendo Ferramenta 4
+     Nova contagem: u=4, trocas=1
+  (-) Vida útil da Ferramenta 0 decrementada por 0 para 1
+  (-) Vida útil da Ferramenta 5 decrementada por 0 para 0
+  (-) Vida útil da Ferramenta 7 decrementada por 0 para 1
+  Estado Final Tarefa 1: u=4, trocas=1
+   Carregadas: 1 1 0 0 0 1 0 1 0 0 
+   Life:       1 1 0 0 0 0 0 1 0 0 
+
+--- Processando Tarefa 2 (ID: 2, Tempo: 0) ---
+  Estado Antes: u=4, trocas=1
+   Life Antes: 1 1 0 0 0 0 0 1 0 0 
+  (+) Carregada Ferramenta 4 (Vida: 0). u=5
+  (!) Capacidade excedida: u=5, c=4. Procurando ferramenta para remover (Nova Politica)...
+    Candidata 0: Prio=1, NextTaskIdx=3, NextTaskID=3, NextTaskTime=0, CurrentLife=1, Metric=1
+    Candidata 5: Prio=5, NextTaskIdx=7, NextTaskID=7, NextTaskTime=1, CurrentLife=0, Metric=-1
+    Melhor candidata pela nova politica: Ferramenta 5 (Metrica: -1)
+    -> Removendo Ferramenta 5
+     Nova contagem: u=4, trocas=2
+  (-) Vida útil da Ferramenta 1 decrementada por 0 para 1
+  (-) Vida útil da Ferramenta 4 decrementada por 0 para 0
+  (-) Vida útil da Ferramenta 7 decrementada por 0 para 1
+  Estado Final Tarefa 2: u=4, trocas=2
+   Carregadas: 1 1 0 0 1 0 0 1 0 0 
+   Life:       1 1 0 0 0 0 0 1 0 0 
+
+--- Processando Tarefa 3 (ID: 3, Tempo: 0) ---
+  Estado Antes: u=4, trocas=2
+   Life Antes: 1 1 0 0 0 0 0 1 0 0 
+  (+) Carregada Ferramenta 2 (Vida: 0). u=5
+  (+) Carregada Ferramenta 3 (Vida: 0). u=6
+  (!) Capacidade excedida: u=6, c=4. Procurando ferramenta para remover (Nova Politica)...
+    Candidata 4: Prio=1, NextTaskIdx=4, NextTaskID=4, NextTaskTime=0, CurrentLife=0, Metric=0
+    Candidata 7: Prio=3, NextTaskIdx=6, NextTaskID=6, NextTaskTime=0, CurrentLife=1, Metric=1
+    Melhor candidata pela nova politica: Ferramenta 4 (Metrica: 0)
+    -> Removendo Ferramenta 4
+     Nova contagem: u=5, trocas=3
+  (!) Capacidade excedida: u=5, c=4. Procurando ferramenta para remover (Nova Politica)...
+    Candidata 7: Prio=3, NextTaskIdx=6, NextTaskID=6, NextTaskTime=0, CurrentLife=1, Metric=1
+    Melhor candidata pela nova politica: Ferramenta 7 (Metrica: 1)
+    -> Removendo Ferramenta 7
+     Nova contagem: u=4, trocas=4
+  (-) Vida útil da Ferramenta 0 decrementada por 0 para 1
+  (-) Vida útil da Ferramenta 1 decrementada por 0 para 1
+  (-) Vida útil da Ferramenta 2 decrementada por 0 para 0
+  (-) Vida útil da Ferramenta 3 decrementada por 0 para 0
+  Estado Final Tarefa 3: u=4, trocas=4
+   Carregadas: 1 1 1 1 0 0 0 0 0 0 
+   Life:       1 1 0 0 0 0 0 0 0 0 
+
+--- Processando Tarefa 4 (ID: 4, Tempo: 0) ---
+  Estado Antes: u=4, trocas=4
+   Life Antes: 1 1 0 0 0 0 0 0 0 0 
+  (+) Carregada Ferramenta 4 (Vida: 0). u=5
+  (!) Capacidade excedida: u=5, c=4. Procurando ferramenta para remover (Nova Politica)...
+    Candidata 0: Prio=2, NextTaskIdx=6, NextTaskID=6, NextTaskTime=0, CurrentLife=1, Metric=1
+    Candidata 1: Prio=1, NextTaskIdx=5, NextTaskID=5, NextTaskTime=0, CurrentLife=1, Metric=1
+    Candidata 2: Prio=1, NextTaskIdx=5, NextTaskID=5, NextTaskTime=0, CurrentLife=0, Metric=0
+    Melhor candidata pela nova politica: Ferramenta 2 (Metrica: 0)
+    -> Removendo Ferramenta 2
+     Nova contagem: u=4, trocas=5
+  (-) Vida útil da Ferramenta 3 decrementada por 0 para 0
+  (-) Vida útil da Ferramenta 4 decrementada por 0 para 0
+  Estado Final Tarefa 4: u=4, trocas=5
+   Carregadas: 1 1 0 1 1 0 0 0 0 0 
+   Life:       1 1 0 0 0 0 0 0 0 0 
+
+--- Processando Tarefa 5 (ID: 5, Tempo: 0) ---
+  Estado Antes: u=4, trocas=5
+   Life Antes: 1 1 0 0 0 0 0 0 0 0 
+  (+) Carregada Ferramenta 2 (Vida: 0). u=5
+  (+) Carregada Ferramenta 6 (Vida: 0). u=6
+  (!) Capacidade excedida: u=6, c=4. Procurando ferramenta para remover (Nova Politica)...
+    Candidata 0: Prio=1, NextTaskIdx=6, NextTaskID=6, NextTaskTime=0, CurrentLife=1, Metric=1
+    Candidata 4: Prio=1, NextTaskIdx=6, NextTaskID=6, NextTaskTime=0, CurrentLife=0, Metric=0
+    Melhor candidata pela nova politica: Ferramenta 4 (Metrica: 0)
+    -> Removendo Ferramenta 4
+     Nova contagem: u=5, trocas=6
+  (!) Capacidade excedida: u=5, c=4. Procurando ferramenta para remover (Nova Politica)...
+    Candidata 0: Prio=1, NextTaskIdx=6, NextTaskID=6, NextTaskTime=0, CurrentLife=1, Metric=1
+    Melhor candidata pela nova politica: Ferramenta 0 (Metrica: 1)
+    -> Removendo Ferramenta 0
+     Nova contagem: u=4, trocas=7
+  (-) Vida útil da Ferramenta 1 decrementada por 0 para 1
+  (-) Vida útil da Ferramenta 2 decrementada por 0 para 0
+  (-) Vida útil da Ferramenta 3 decrementada por 0 para 0
+  (-) Vida útil da Ferramenta 6 decrementada por 0 para 0
+  Estado Final Tarefa 5: u=4, trocas=7
+   Carregadas: 0 1 1 1 0 0 1 0 0 0 
+   Life:       0 1 0 0 0 0 0 0 0 0 
+
+--- Processando Tarefa 6 (ID: 6, Tempo: 0) ---
+  Estado Antes: u=4, trocas=7
+   Life Antes: 0 1 0 0 0 0 0 0 0 0 
+  (+) Carregada Ferramenta 0 (Vida: 1). u=5
+  (+) Carregada Ferramenta 4 (Vida: 0). u=6
+  (+) Carregada Ferramenta 7 (Vida: 1). u=7
+  (!) Capacidade excedida: u=7, c=4. Procurando ferramenta para remover (Nova Politica)...
+    Encontrada candidata ideal: Ferramenta 1 (prioridade -1).
+    -> Removendo Ferramenta 1
+     Nova contagem: u=6, trocas=8
+  (!) Capacidade excedida: u=6, c=4. Procurando ferramenta para remover (Nova Politica)...
+    Candidata 2: Prio=2, NextTaskIdx=8, NextTaskID=8, NextTaskTime=1, CurrentLife=0, Metric=-1
+    Candidata 3: Prio=1, NextTaskIdx=7, NextTaskID=7, NextTaskTime=1, CurrentLife=0, Metric=-1
+    Melhor candidata pela nova politica: Ferramenta 2 (Metrica: -1)
+    -> Removendo Ferramenta 2
+     Nova contagem: u=5, trocas=9
+  (!) Capacidade excedida: u=5, c=4. Procurando ferramenta para remover (Nova Politica)...
+    Candidata 3: Prio=1, NextTaskIdx=7, NextTaskID=7, NextTaskTime=1, CurrentLife=0, Metric=-1
+    Melhor candidata pela nova politica: Ferramenta 3 (Metrica: -1)
+    -> Removendo Ferramenta 3
+     Nova contagem: u=4, trocas=10
+  (-) Vida útil da Ferramenta 0 decrementada por 0 para 1
+  (-) Vida útil da Ferramenta 4 decrementada por 0 para 0
+  (-) Vida útil da Ferramenta 6 decrementada por 0 para 0
+  (-) Vida útil da Ferramenta 7 decrementada por 0 para 1
+  Estado Final Tarefa 6: u=4, trocas=10
+   Carregadas: 1 0 0 0 1 0 1 1 0 0 
+   Life:       1 0 0 0 0 0 0 1 0 0 
+
+--- Processando Tarefa 7 (ID: 7, Tempo: 1) ---
+  Estado Antes: u=4, trocas=10
+   Life Antes: 1 0 0 0 0 0 0 1 0 0 
+  (+) Carregada Ferramenta 3 (Vida: 0). u=5
+  (+) Carregada Ferramenta 5 (Vida: 0). u=6
+  (!) Capacidade excedida: u=6, c=4. Procurando ferramenta para remover (Nova Politica)...
+    Encontrada candidata ideal: Ferramenta 6 (prioridade -1).
+    -> Removendo Ferramenta 6
+     Nova contagem: u=5, trocas=11
+  (!) Capacidade excedida: u=5, c=4. Procurando ferramenta para remover (Nova Politica)...
+    Encontrada candidata ideal: Ferramenta 7 (prioridade -1).
+    -> Removendo Ferramenta 7
+     Nova contagem: u=4, trocas=12
+  (-) Vida útil da Ferramenta 3 decrementada por 1 para -1
+  (-) Vida útil da Ferramenta 5 decrementada por 1 para -1
+  Estado Final Tarefa 7: u=4, trocas=12
+   Carregadas: 1 0 0 1 1 1 0 0 0 0 
+   Life:       1 0 0 -1 0 -1 0 0 0 0 
+
+--- Processando Tarefa 8 (ID: 8, Tempo: 1) ---
+  Estado Antes: u=4, trocas=12
+   Life Antes: 1 0 0 -1 0 -1 0 0 0 0 
+  (+) Carregada Ferramenta 2 (Vida: 0). u=5
+  (!) Capacidade excedida: u=5, c=4. Procurando ferramenta para remover (Nova Politica)...
+    Encontrada candidata ideal: Ferramenta 3 (prioridade -1).
+    -> Removendo Ferramenta 3
+     Nova contagem: u=4, trocas=13
+  (-) Vida útil da Ferramenta 0 decrementada por 1 para 0
+  (-) Vida útil da Ferramenta 2 decrementada por 1 para -1
+  Estado Final Tarefa 8: u=4, trocas=13
+   Carregadas: 1 0 1 0 1 1 0 0 0 0 
+   Life:       0 0 -1 0 0 -1 0 0 0 0 
+
+--- Processando Tarefa 9 (ID: 9, Tempo: 0) ---
+  Estado Antes: u=4, trocas=13
+   Life Antes: 0 0 -1 0 0 -1 0 0 0 0 
+  (!) Troca PREDITIVA por DESGASTE: Ferramenta 2 renovada. Novas trocas=14
+  (-) Vida útil da Ferramenta 2 decrementada por 0 para 0
+  (-) Vida útil da Ferramenta 4 decrementada por 0 para 0
+  Estado Final Tarefa 9: u=4, trocas=14
+   Carregadas: 1 0 1 0 1 1 0 0 0 0 
+   Life:       0 0 0 0 0 -1 0 0 0 0 
+
+--- Fim da Simulação ---
+Trocas incrementais (desgaste + capacidade): 14
+18
