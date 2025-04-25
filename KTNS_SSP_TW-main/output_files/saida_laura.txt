@@ -1,0 +1,27 @@
+--- Inicializando para Tarefa 0 (ID: 0) ---
+  Carregada Ferramenta 0 (Vida Inicial: 2)
+  Carregada Ferramenta 2 (Vida Inicial: 2)
+
+--- Processando Tarefa 0 (ID: 0, Tempo: 1) ---
+  Estado Antes: u=2, trocas=0
+   Life Antes: 2 0 2 
+  (-) Vida útil da Ferramenta 0 decrementada por 1 para 1
+  (-) Vida útil da Ferramenta 2 decrementada por 1 para 1
+  Estado Final Tarefa 0: u=2, trocas=0
+   Carregadas: 1 0 1 
+   Life:       1 0 1 
+
+--- Processando Tarefa 1 (ID: 1, Tempo: 1) ---
+  Estado Antes: u=2, trocas=0
+   Life Antes: 1 0 1 
+  (+) Carregada Ferramenta 1 (Vida: 2). u=3
+  (-) Vida útil da Ferramenta 0 decrementada por 1 para 0
+  (-) Vida útil da Ferramenta 1 decrementada por 1 para 1
+  (-) Vida útil da Ferramenta 2 decrementada por 1 para 0
+  Estado Final Tarefa 1: u=3, trocas=0
+   Carregadas: 1 1 1 
+   Life:       0 1 0 
+
+--- Fim da Simulação ---
+Trocas incrementais (desgaste + capacidade): 0
+3
