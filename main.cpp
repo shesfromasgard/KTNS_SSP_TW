@@ -184,7 +184,7 @@ int KTNS(const vector<int>& processos, bool debug = false) {
                         }
                     }
                 }
-                if (debug && remove != -1) cout << "    Melhor candidata pela nova politica: Ferramenta " << remove << " (Metrica: " << min << ")" << endl;
+                if (debug && remove != -1) cout << "    Melhor candidata: Ferramenta " << remove << " (Metrica: " << min << ")" << endl;
             }
 
             if (remove != -1) {
