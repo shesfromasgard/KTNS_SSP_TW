@@ -145,8 +145,7 @@ void KTNS(const vector<int> processos, bool debug = false) {
 
 		cout << "Ferramentas carregadas: " << endl;
 		for (unsigned j = 0; j < m; j++) {
-			if (carregadas[j] == 33) exit(0);
-					cout << carregadas[j] << endl;
+			cout << carregadas[j] << endl;
 		}
 	}
 
@@ -172,6 +171,7 @@ void KTNS(const vector<int> processos, bool debug = false) {
 			int maior = 0;
 			int pMaior = -1;
 			for (unsigned j = 0; j < m; ++j) {
+				
 				if (magazine[j][i] != 1){ // Ferramenta não utilizada pelo processo atual
 					if ((carregadas[j] == 1) && (prioridades[j][i] == -1)) { // Essa ferramenta não será mais utilizada e é um excelente candidato a remoção
 						pMaior = j;

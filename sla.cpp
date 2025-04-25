@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include <numeric>
 #include <string>
 #include <algorithm>
@@ -11,7 +12,7 @@ using namespace std;
 // m = número de ferramentas
 // n = número de tarefas
 // c = capacidade do magazine
-// toolLife = tempo de vida útil de cada ferramenta nova
+// toolLife = tempo de vida últil de cada ferramenta nova
 // executionTime = tempo de execução de cada tarefa
 // matrix = matriz de ferramentas
 // ***************************************************
@@ -21,7 +22,7 @@ vector<vector<int>> matrix;
 vector<int> toolLife;
 vector<int> executionTime;
 
-long KTNS_Wear(const vector<int> processos, bool debug = false); // Renomeei a função
+int KTNS(const vector<int>& processos, bool debug);
 
 int main() {
 
@@ -41,236 +42,194 @@ int main() {
         for (int j = 0; j < n; ++j)
             cin >> matrix[i][j];
 
-    vector<int> processos(n); // Sequência de tarefas a serem processadas
+    vector<int> processos(n);
     iota(processos.begin(), processos.end(), 0);
 
-    cout << KTNS_Wear(processos, false) << endl;
+    cout << KTNS(processos, true);
 
     return 0;
 }
 
-long KTNS(const vector<int> processos, bool debug) {
+int KTNS(const vector<int>& processos, bool debug = false) {
 
-    vector<int> loaded(m, 0);
+    if (processos.empty()) {
+        return 0;
+    }
+
+    vector<int> carregadas(m, 0);
+    vector<int> remainingLife(m, 0);
     int u = 0;
-    vector<int> currentToolLife = toolLife;
-
-    vector<vector<int>> priorities(m, vector<int>(processos.size()));
-    vector<vector<int>> magazine(m, vector<int>(processos.size()));
-
-    if (debug) {
-        cout << endl << "Matriz de Ferramentas no KTNS" << endl;
-        for (unsigned j = 0; j < m; j++){
-            for (unsigned i = 0; i < n; ++i){
-                cout << matrix[j][i] << " ";
-            }
-            cout << endl;
-        }
-        cout << " --------------------- " << endl;
-        cout << "Processos" << endl;
-        for (unsigned i = 0; i < processos.size(); i++) {
-            cout << processos[i] << " ";
-        }
-        cout << endl;
-        cout << endl;
-    }
-
-    for (unsigned j = 0; j < m; j++) {
-        for (unsigned i = 0; i < processos.size(); i++) {
-             magazine[j][i] = matrix[j][processos[i]];
-        }
-    }
-
-    for (unsigned i = 0; i < m; ++i){
-        for (unsigned j = 0; j < processos.size(); ++j){
-            if (magazine[i][j] == 1)
-                priorities[i][j] = 0;
-            else {
-                int proxima = 0;
-                bool usa = false;
-                for (unsigned k = j + 1; k < processos.size(); ++k){
-                    ++proxima;
-                    if (magazine[i][k] == 1){
-                        usa = true;
-                        break;
-                    }
-                }
-                if (usa)
-                    priorities[i][j] = proxima; // Número de tarefas até a próxima vez que será usada
-                else
-                    priorities[i][j] = -1; // Não será mais usada
-            }
-        }
-    }
-
-    for (unsigned j = 0; j < m; j++) {
-        if (magazine[j][0] == 1) {
-            loaded[j] = 1;
-            ++u;
-        }
-    }
-
     int trocas = 0;
 
-    if (debug) {
-        cout << u << " ferramentas carregadas na primeira tarefa" << endl;
-        cout << "Ferramentas carregadas (inicial):" << endl;
-        for(int j = 0; j < m; ++j) cout << loaded[j] << " ";
-        cout << endl;
-        cout << "Vida útil restante (inicial):" << endl;
-        for(int j = 0; j < m; ++j) cout << currentToolLife[j] << " ";
-        cout << endl;
+    vector<vector<int>> magazine(m, vector<int>(processos.size()));
+    vector<vector<int>> prioridades(m, vector<int>(processos.size()));
+
+    for (unsigned j = 0; j < m; ++j) {
+        for (unsigned i = 0; i < processos.size(); ++i) {
+            int currentTaskId = processos[i];
+            if (currentTaskId >= 0 && currentTaskId < n) {
+                magazine[j][i] = matrix[j][currentTaskId];
+            } else {
+                 magazine[j][i] = 0;
+                 if(debug) cerr << "Aviso: ID de tarefa inválido " << currentTaskId << " no índice " << i << endl;
+            }
+        }
+    }
+    for (unsigned i = 0; i < m; ++i) {
+        for (unsigned j = 0; j < processos.size(); ++j) {
+            if (magazine[i][j] == 1) {
+                prioridades[i][j] = 0;
+            } else {
+                int proxima = 0;
+                bool usa = false;
+                for (unsigned k = j + 1; k < processos.size(); ++k) {
+                    ++proxima;
+                    if (magazine[i][k] == 1) {
+                        usa = true; break;
+                    }
+                }
+                prioridades[i][j] = usa ? proxima : -1;
+            }
+        }
     }
 
+    // Tarefa 0
+    if (debug) cout << "--- Inicializando para Tarefa 0 (ID: " << processos[0] << ") ---" << endl;
+    int firstTaskId = processos[0];
+    if (firstTaskId >= 0 && firstTaskId < n) {
+        for (unsigned j = 0; j < m; ++j) {
+            if (magazine[j][0] == 1) {
+                carregadas[j] = 1;
+                remainingLife[j] = toolLife[j];
+                u++;
+                if (debug) cout << "  Carregada Ferramenta " << j << " (Vida Inicial: " << remainingLife[j] << ")" << endl;
+            }
+        }
+    } else {
+         if(debug) 
+            cerr << "Erro: Primeira tarefa inválida!" << endl;
+         return 0;
+    }
 
-    // Processar as tarefas sequencialmente
+    // Simulação da Sequência
     for (unsigned i = 0; i < processos.size(); ++i) {
-        int currentTaskIndex = processos[i];
+        int currentTaskId = processos[i];
+        if (currentTaskId < 0 || currentTaskId >= n) 
+            continue;
 
-        if (debug) {
-             cout << "\nProcessando tarefa: " << currentTaskIndex << " (exec time: " << executionTime[currentTaskIndex] << ")" << endl;
-             cout << "Ferramentas carregadas antes da tarefa:" << endl;
-             for(int j = 0; j < m; ++j) cout << loaded[j] << " ";
-             cout << endl;
-             cout << "Vida útil restante antes da tarefa:" << endl;
-             for(int j = 0; j < m; ++j) cout << currentToolLife[j] << " ";
-             cout << endl;
-        }
+        int taskExecTime = executionTime[currentTaskId];
+
+        if (debug) cout << "\n--- Processando Tarefa " << i << " (ID: " << currentTaskId << ", Tempo: " << taskExecTime << ") ---" << endl;
+        if (debug) cout << "  Estado Antes: u=" << u << ", trocas=" << trocas << endl;
+        if (debug) {cout << "   Life Antes: "; for(int l : remainingLife) cout << l << " "; cout << endl;}
 
 
-        // 1. Verificar e substituir ferramentas carregadas com vida útil insuficiente para a tarefa atual
-        // Percorremos as ferramentas carregadas que são necessárias para esta tarefa
+        // A. Verificação PREDITIVA de Desgaste ANTES do uso:
         for (unsigned j = 0; j < m; ++j) {
-            if (loaded[j] == 1 && magazine[j][i] == 1) {
-                if (currentToolLife[j] < executionTime[currentTaskIndex]) {
-                    if (debug) cout << "  --> Ferramenta " << j << " (vida: " << currentToolLife[j] << ") sem vida útil suficiente para a tarefa " << currentTaskIndex << ". Trocando." << endl;
-                    loaded[j] = 0; // Descarrega a ferramenta desgastada
-                    u--;
+            if (magazine[j][i] == 1 && carregadas[j] == 1) {
+                if (remainingLife[j] < taskExecTime) {
                     trocas++;
-                    // Carregar uma nova ferramenta
-                    loaded[j] = 1;
-                    u++; // Incrementa u porque é uma "nova" ferramenta no magazine
-                    currentToolLife[j] = toolLife[j]; // Zera a vida útil da nova ferramenta
+                    remainingLife[j] = toolLife[j];
+                    if (debug) cout << "  (!) Troca PREDITIVA por DESGASTE: Ferramenta " << j << " renovada. Novas trocas=" << trocas << endl;
                 }
             }
         }
 
-        // 2. Carregar novas ferramentas necessárias para a tarefa atual que não estão carregadas
+        // B. Carregamento de Ferramentas Necessárias:
         for (unsigned j = 0; j < m; ++j) {
-            // Se a ferramenta é necessária para a tarefa atual E não está carregada
-            if ((magazine[j][i] == 1) && (loaded[j] == 0)) {
-                // Ao carregar uma ferramenta que não estava no magazine, assumimos uma nova instância
-                // cuja vida útil inicial deve ser suficiente para a tarefa.
-                if (toolLife[j] >= executionTime[currentTaskIndex]) {
-                     loaded[j] = 1;
-                     ++u;
-                     currentToolLife[j] = toolLife[j]; // Inicializa a vida útil da ferramenta carregada
-                } else {
-                     // Este erro indica que a vida útil inicial de uma ferramenta é menor que o tempo de uma tarefa que a utiliza.
-                     cerr << "Erro: Vida útil inicial da ferramenta " << j << " é insuficiente para a tarefa " << currentTaskIndex << "." << endl;
-                     return -1; // Indica um problema no input
-                }
+            if (magazine[j][i] == 1 && carregadas[j] == 0) {
+                carregadas[j] = 1;
+                remainingLife[j] = toolLife[j]; // Define vida ao carregar
+                u++;
+                if (debug) cout << "  (+) Carregada Ferramenta " << j << " (Vida: " << remainingLife[j] << "). u=" << u << endl;
             }
         }
 
-         if (debug) {
-             cout << "Ferramentas carregadas após carregar/trocar para tarefa " << currentTaskIndex << ":" << endl;
-             for(int j = 0; j < m; ++j) cout << loaded[j] << " ";
-             cout << endl;
-             cout << "Vida útil restante após carregar/trocar para tarefa " << currentTaskIndex << ":" << endl;
-             for(int j = 0; j < m; ++j) cout << currentToolLife[j] << " ";
-             cout << endl;
-             cout << "Ferramentas no magazine (u): " << u << endl;
-         }
+        // C. Remoção por Capacidade:
+        while (u > c) {
+            if (debug) cout << "  (!) Capacidade excedida: u=" << u << ", c=" << c << ". Procurando ferramenta para remover (Nova Politica)..." << endl;
 
+            int toolRemove = -1;
+            bool removedNoFuture = false;
 
-        // 3. Gerenciar a capacidade do magazine *para a próxima tarefa* (se houver)
-        // Esta lógica deve decidir quais ferramentas descarregar se o magazine estiver cheio,
-        // considerando a prioridade (quando serão necessárias novamente) E a vida útil restante.
-        if (i < processos.size() - 1) {
-            int nextTaskIndexInProcessos = i + 1; // Índice da próxima tarefa no vetor 'processos'
-            int nextActualTaskIndex = processos[nextTaskIndexInProcessos]; // Índice real da próxima tarefa
-
-            if (debug) {
-                cout << "Gerenciando magazine para a próxima tarefa: " << nextActualTaskIndex << endl;
+            // 1. Priorizar ferramentas que não serão mais usadas (-1)
+            for (unsigned j = 0; j < m; ++j) {
+                if (carregadas[j] == 1 && magazine[j][i] != 1 && prioridades[j][i] == -1) {
+                    toolRemove = j;
+                    removedNoFuture = true;
+                    if (debug) cout << "    Encontrada candidata ideal: Ferramenta " << j << " (prioridade -1)." << endl;
+                    goto removal; // Achou a melhor opção, sai da busca
+                }
             }
 
-            while (u > c) {
-                int bestToolToRemove = -1;
-                int bestPriority = -2; // Prioridade: quanto maior, mais longe será usada (ou -1 se não for mais usada)
-                int lowestRemainingLife = numeric_limits<int>::max(); // Menor vida restante entre os candidatos
+            // 2. Se não removeu uma com -1, aplica a nova política
+            if (!removedNoFuture) {
+                int minMetric = numeric_limits<int>::max(); // Começa com valor muito alto
 
                 for (unsigned j = 0; j < m; ++j) {
-                    // Se a ferramenta está carregada E não é necessária para a *próxima* tarefa
-                    if (loaded[j] == 1 && magazine[j][nextTaskIndexInProcessos] == 0) {
-                        // Prioridade de remoção: ferramentas que não serão mais usadas (-1 na prioridade) são as primeiras candidatas
-                        if (priorities[j][nextTaskIndexInProcessos] == -1) {
-                            bestToolToRemove = j;
-                            if (debug) cout << "  --> Candidata a remover (nao sera mais usada): " << j << endl;
-                            break; // Encontrou o melhor candidato, pode remover imediatamente
-                        } else {
-                            // Entre as ferramentas que serão usadas novamente, remova aquela que será necessária mais tarde (maior valor de prioridade)
-                            if (priorities[j][nextTaskIndexInProcessos] > bestPriority) {
-                                bestPriority = priorities[j][nextTaskIndexInProcessos];
-                                bestToolToRemove = j;
-                                lowestRemainingLife = currentToolLife[j]; // Armazena vida restante para desempate
-                                if (debug) cout << "  --> Melhor candidata temporaria (prioridade): " << j << " (pri: " << bestPriority << ")" << endl;
-                            } else if (priorities[j][nextTaskIndexInProcessos] == bestPriority) {
-                                // Desempate de prioridade: remova a ferramenta com MENOR vida útil restante
-                                if (currentToolLife[j] < lowestRemainingLife) {
-                                    lowestRemainingLife = currentToolLife[j];
-                                    bestToolToRemove = j;
-                                     if (debug) cout << "  --> Melhor candidata temporaria (desempate vida): " << j << " (vida: " << lowestRemainingLife << ")" << endl;
+                    if (carregadas[j] == 1 && magazine[j][i] != 1 && prioridades[j][i] > 0) {
+                        int priority = prioridades[j][i];
+                        int nextIndex = i + priority;
+
+                        if (nextIndex < processos.size()) {
+                            int nextId = processos[nextIndex];
+                            if (nextId >= 0 && nextId < n) {
+                                int nextTime = executionTime[nextId];
+                                int currentMetric = remainingLife[j] - nextTime;
+
+                                if (debug) cout << "    Candidata " << j << ": Prio=" << priority << ", NextTaskIdx=" << nextIndex << ", NextTaskID=" << nextId << ", NextTaskTime=" << nextTime << ", CurrentLife=" << remainingLife[j] << ", Metric=" << currentMetric << endl;
+
+                                if (currentMetric < minMetric) {
+                                    minMetric = currentMetric;
+                                    toolRemove = j;
                                 }
+                            } else {
+                                if (debug) cerr << "    Aviso: nextId inválido para ferramenta " << j << endl;
                             }
+                        } else {
+                             if (debug) cerr << "    Aviso: nextIndex fora dos limites para ferramenta " << j << endl;
                         }
                     }
                 }
+                if (debug && toolRemove != -1) cout << "    Melhor candidata pela nova politica: Ferramenta " << toolRemove << " (Metrica: " << minMetric << ")" << endl;
+            }
 
-                if (bestToolToRemove != -1) {
-                    if (debug) cout << "Removendo ferramenta (capacidade): " << bestToolToRemove << " antes da tarefa " << nextActualTaskIndex << endl;
-                    loaded[bestToolToRemove] = 0;
-                    u--;
-                    // Nota: Esta remoção é devido à capacidade. A troca só é contada se/quando ela for carregada novamente
-                    // E for uma nova instância devido ao desgaste anterior. A contagem de trocas já acontece
-                    // quando substituímos uma ferramenta por desgaste (Passo 1).
-                } else {
-                     // Este caso pode ocorrer se todas as ferramentas carregadas forem necessárias para a próxima tarefa
-                     // e a capacidade for excedida. Isso pode indicar um problema na formulação ou na capacidade.
-                     cerr << "Erro: Não foi possível remover ferramenta para liberar espaço no magazine antes da tarefa " << nextActualTaskIndex << ". Todas as ferramentas carregadas são necessárias ou a capacidade é insuficiente." << endl;
-                     exit(1); // Ou retorne um código de erro apropriado
-                }
+        removal:
+            if (toolRemove != -1) {
+                if (debug) cout << "    -> Removendo Ferramenta " << toolRemove << endl;
+                carregadas[toolRemove] = 0;
+                remainingLife[toolRemove] = 0;
+                u--;
+                trocas++;
+                if (debug) cout << "     Nova contagem: u=" << u << ", trocas=" << trocas << endl;
+            } else {
+                // Se toolRemove continua -1, significa que não achou nenhuma ferramenta para remover (todas carregadas são necessárias ou houve erro).
+                if (debug) cerr << "  ERRO: Impossível remover ferramenta (Nova Politica)! u=" << u << ", c=" << c << endl;
+                break; // Sai do while para evitar loop infinito
             }
         }
 
-        // 4. Simular desgaste das ferramentas usadas na tarefa atual
-        // Este passo simula o consumo de vida útil DURANTE a execução da tarefa.
+
+        // D. Decremento da Vida Útil APÓS o uso:
         for (unsigned j = 0; j < m; ++j) {
-            // Se a ferramenta estava carregada E foi usada nesta tarefa
-            if (loaded[j] == 1 && magazine[j][i] == 1) {
-                currentToolLife[j] -= executionTime[currentTaskIndex];
-                 if (debug) cout << "  --> Ferramenta " << j << " usada na tarefa " << currentTaskIndex << ". Vida restante: " << currentToolLife[j] << endl;
+            if (magazine[j][i] == 1 && carregadas[j] == 1) {
+                remainingLife[j] -= taskExecTime;
+                if (debug) cout << "  (-) Vida útil da Ferramenta " << j << " decrementada por " << taskExecTime << " para " << remainingLife[j] << endl;
             }
         }
 
-         if (debug) {
-             cout << "Fim da tarefa: " << currentTaskIndex << endl;
-             cout << "Ferramentas carregadas ao final da tarefa:" << endl;
-             for(int j = 0; j < m; ++j) cout << loaded[j] << " ";
-             cout << endl;
-             cout << "Vida útil restante ao final da tarefa:" << endl;
-             for(int j = 0; j < m; ++j) cout << currentToolLife[j] << " ";
-             cout << endl;
-             cout << "Total de trocas até agora: " << trocas << endl;
-             cout << "-------------------------------------" << endl;
-         }
+        if (debug) {
+             cout << "  Estado Final Tarefa " << i << ": u=" << u << ", trocas=" << trocas << endl;
+             cout << "   Carregadas: "; for(int l : carregadas) cout << l << " "; cout << endl;
+             cout << "   Life:       "; for(int l : remainingLife) cout << l << " "; cout << endl;
+        }
 
     }
 
-    // A variável 'trocas' já acumulou todas as trocas (por desgaste e capacidade)
     if (debug) {
-        cout << "Total final de trocas: " << trocas << endl;
+        cout << "\n--- Fim da Simulação ---" << endl;
+        cout << "Trocas incrementais (desgaste + capacidade): " << trocas << endl;
     }
 
-    return trocas; // O número total de trocas
+    return trocas + c;
 }
