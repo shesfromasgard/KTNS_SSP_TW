@@ -64,17 +64,20 @@ int KTNS(const vector<int>& processos, bool debug = false) {
     vector<vector<int>> magazine(m, vector<int>(processos.size()));
     vector<vector<int>> prioridades(m, vector<int>(processos.size()));
 
+    // Preenchendo o segundo vetor do magazine 
     for (unsigned j = 0; j < m; ++j) {
         for (unsigned i = 0; i < processos.size(); ++i) {
             int currentTaskId = processos[i];
             if (currentTaskId >= 0 && currentTaskId < n) {
                 magazine[j][i] = matrix[j][currentTaskId];
             } else {
-                 magazine[j][i] = 0;
-                 if(debug) cerr << "Aviso: ID de tarefa inválido " << currentTaskId << " no índice " << i << endl;
+                magazine[j][i] = 0;
+                if(debug) cerr << "Aviso: ID de tarefa inválido " << currentTaskId << " no índice " << i << endl;
             }
         }
     }
+
+    // Preenchendo a matriz de prioridades
     for (unsigned i = 0; i < m; ++i) {
         for (unsigned j = 0; j < processos.size(); ++j) {
             if (magazine[i][j] == 1) {
@@ -95,8 +98,7 @@ int KTNS(const vector<int>& processos, bool debug = false) {
 
     // Tarefa 0
     if (debug) cout << "--- Inicializando para Tarefa 0 (ID: " << processos[0] << ") ---" << endl;
-    int firstTaskId = processos[0];
-    if (firstTaskId >= 0 && firstTaskId < n) {
+    if (processos[0] >= 0 && processos[0] < n) {
         for (unsigned j = 0; j < m; ++j) {
             if (magazine[j][0] == 1) {
                 carregadas[j] = 1;
@@ -106,28 +108,24 @@ int KTNS(const vector<int>& processos, bool debug = false) {
             }
         }
     } else {
-         if(debug) 
+        if(debug) 
             cerr << "Erro: Primeira tarefa inválida!" << endl;
-         return 0;
+        return 0;
     }
 
-    // Simulação da Sequência
     for (unsigned i = 0; i < processos.size(); ++i) {
-        int currentTaskId = processos[i];
-        if (currentTaskId < 0 || currentTaskId >= n) 
+        if (processos[i] < 0 || processos[i] >= n) 
             continue;
 
-        int taskExecTime = executionTime[currentTaskId];
-
-        if (debug) cout << "\n--- Processando Tarefa " << i << " (ID: " << currentTaskId << ", Tempo: " << taskExecTime << ") ---" << endl;
+        if (debug) cout << "\n--- Processando Tarefa " << i << " (ID: " << processos[i] << ", Tempo: " << executionTime[processos[i]] << ") ---" << endl;
         if (debug) cout << "  Estado Antes: u=" << u << ", trocas=" << trocas << endl;
         if (debug) {cout << "   Life Antes: "; for(int l : remainingLife) cout << l << " "; cout << endl;}
 
 
-        // A. Verificação PREDITIVA de Desgaste ANTES do uso:
+        // Verificação PREDITIVA de Desgaste ANTES do uso:
         for (unsigned j = 0; j < m; ++j) {
             if (magazine[j][i] == 1 && carregadas[j] == 1) {
-                if (remainingLife[j] < taskExecTime) {
+                if (remainingLife[j] < executionTime[processos[i]]) {
                     trocas++;
                     remainingLife[j] = toolLife[j];
                     if (debug) cout << "  (!) Troca PREDITIVA por DESGASTE: Ferramenta " << j << " renovada. Novas trocas=" << trocas << endl;
@@ -135,7 +133,7 @@ int KTNS(const vector<int>& processos, bool debug = false) {
             }
         }
 
-        // B. Carregamento de Ferramentas Necessárias:
+        // Carregamento de Ferramentas Necessárias:
         for (unsigned j = 0; j < m; ++j) {
             if (magazine[j][i] == 1 && carregadas[j] == 0) {
                 carregadas[j] = 1;
@@ -145,53 +143,50 @@ int KTNS(const vector<int>& processos, bool debug = false) {
             }
         }
 
-        // C. Remoção por Capacidade:
+        // Remoção por Capacidade:
         while (u > c) {
             if (debug) cout << "  (!) Capacidade excedida: u=" << u << ", c=" << c << ". Procurando ferramenta para remover (Nova Politica)..." << endl;
 
             int toolRemove = -1;
-            bool removedNoFuture = false;
+            bool removed = false;
 
             // 1. Priorizar ferramentas que não serão mais usadas (-1)
             for (unsigned j = 0; j < m; ++j) {
                 if (carregadas[j] == 1 && magazine[j][i] != 1 && prioridades[j][i] == -1) {
                     toolRemove = j;
-                    removedNoFuture = true;
+                    removed = true;
                     if (debug) cout << "    Encontrada candidata ideal: Ferramenta " << j << " (prioridade -1)." << endl;
                     goto removal; // Achou a melhor opção, sai da busca
                 }
             }
 
             // 2. Se não removeu uma com -1
-            if (!removedNoFuture) {
-                int minMetric = numeric_limits<int>::max();
+            if (!removed) {
+                int min = numeric_limits<int>::max();
 
                 for (unsigned j = 0; j < m; ++j) {
                     if (carregadas[j] == 1 && magazine[j][i] != 1 && prioridades[j][i] > 0) {
-                        int priority = prioridades[j][i];
-                        int nextIndex = i + priority;
+                        int nextIndex = i + prioridades[j][i];
 
                         if (nextIndex < processos.size()) {
-                            int nextId = processos[nextIndex];
-                            if (nextId >= 0 && nextId < n) {
-                                int nextTime = executionTime[nextId];
-                                int currentMetric = remainingLife[j] - nextTime;
+                            if (processos[nextIndex] >= 0 && processos[nextIndex] < n) {
+                                int current = remainingLife[j] - executionTime[processos[nextIndex]];
 
-                                if (debug) cout << "    Candidata " << j << ": Prio=" << priority << ", NextTaskIdx=" << nextIndex << ", NextTaskID=" << nextId << ", NextTaskTime=" << nextTime << ", CurrentLife=" << remainingLife[j] << ", Metric=" << currentMetric << endl;
+                                if (debug) cout << "    Candidata " << j << ": Prioridade=" << prioridades[j][i] << ", NextTaskIdx=" << nextIndex << ", NextTaskID=" << processos[nextIndex] << ", NextTaskTime=" << executionTime[processos[nextIndex]] << ", CurrentLife=" << remainingLife[j] << ", Metric=" << current << endl;
 
-                                if (currentMetric < minMetric) {
-                                    minMetric = currentMetric;
+                                if (current < min) {
+                                    min = current;
                                     toolRemove = j;
                                 }
                             } else {
                                 if (debug) cerr << "    Aviso: nextId inválido para ferramenta " << j << endl;
                             }
                         } else {
-                             if (debug) cerr << "    Aviso: nextIndex fora dos limites para ferramenta " << j << endl;
+                            if (debug) cerr << "    Aviso: nextIndex fora dos limites para ferramenta " << j << endl;
                         }
                     }
                 }
-                if (debug && toolRemove != -1) cout << "    Melhor candidata pela nova politica: Ferramenta " << toolRemove << " (Metrica: " << minMetric << ")" << endl;
+                if (debug && toolRemove != -1) cout << "    Melhor candidata pela nova politica: Ferramenta " << toolRemove << " (Metrica: " << min << ")" << endl;
             }
 
         removal:
@@ -210,24 +205,24 @@ int KTNS(const vector<int>& processos, bool debug = false) {
         }
 
 
-        // D. Decremento da Vida Útil APÓS o uso:
+        // Decremento da Vida Útil APÓS o uso:
         for (unsigned j = 0; j < m; ++j) {
             if (magazine[j][i] == 1 && carregadas[j] == 1) {
-                remainingLife[j] -= taskExecTime;
-                if (debug) cout << "  (-) Vida útil da Ferramenta " << j << " decrementada por " << taskExecTime << " para " << remainingLife[j] << endl;
+                remainingLife[j] -= executionTime[processos[i]];
+                if (debug) cout << "  (-) Vida útil da Ferramenta " << j << " decrementada por " << executionTime[processos[i]] << " para " << remainingLife[j] << endl;
             }
         }
 
         if (debug) {
-             cout << "  Estado Final Tarefa " << i << ": u=" << u << ", trocas=" << trocas << endl;
-             cout << "   Carregadas: "; for(int l : carregadas) cout << l << " "; cout << endl;
-             cout << "   Life:       "; for(int l : remainingLife) cout << l << " "; cout << endl;
+            cout << "  Estado Final Tarefa " << i << ": u=" << u << ", trocas=" << trocas << endl;
+            cout << "   Carregadas: "; for(int l : carregadas) cout << l << " "; cout << endl;
+            cout << "   Life:       "; for(int l : remainingLife) cout << l << " "; cout << endl;
         }
 
     }
 
     if (debug) {
-        cout << "\n--- Fim da Simulação ---" << endl;
+        cout << endl << endl;
         cout << "Trocas incrementais (desgaste + capacidade): " << trocas << endl;
     }
 
