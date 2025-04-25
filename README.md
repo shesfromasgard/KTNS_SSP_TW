@@ -4,20 +4,21 @@ O KTNS disponibilizado neste repositório é para resolução do subproblema de 
 
 Esse código foi adaptado do KTNS disponibilizado por [Soares e Carvalho (2020)](https://doi.org/10.1016/j.ejor.2020.02.047) para ser executado corretamente no Windows.
 
-As instâncias usadas para teste nesse protótipo foram retiradas da tabela 1 de [Crama et al. (1994)](https://doi.org/10.1007/BF01324874), adaptadas para os requisitos específicos do SSP-TW e estão localizadas na pasta '[input_files](https://github.com/shesfromasgard/KTNS_SSP_TW/tree/main/input_files)'. Caso queira testar outras instâncias, adicione-as à pasta de entrada. As soluções serão impressas em arquivos de texto individuais na pasta '[output_files](https://github.com/shesfromasgard/KTNS_SSP_TW/tree/main/output_files)'.
+A instâncias de teste devem ser colocadas na pasta '[input_files](https://github.com/shesfromasgard/KTNS_SSP_TW/tree/main/input_files)'. As soluções serão impressas em arquivos de texto individuais na pasta '[output_files](https://github.com/shesfromasgard/KTNS_SSP_TW/tree/main/output_files)'.
 
 Caso tenha alguma dúvida sobre o problema ou implementação, mande-me uma mensagem no meu endereço de e-mail[^1], responderei assim que possível.
 
-Para compilar o código, use o comando:
+Para compilar o código, use os comandos:
 
 ```
 g++ main.cpp -o main.exe -std=c++17
+g++ run.cpp -o run.exe -std=c++17
 ```
 
 Para rodar o código, use o comando:
 
 ```
-python .\runner.py
+./run ./input_files/
 ```
 
 [^1]: lauracsrocha0@gmail.com
