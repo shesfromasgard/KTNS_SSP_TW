@@ -103,20 +103,25 @@ int KTNS(const vector<int> processos, bool debug = false) {
 		}
 	}
 
-    for(unsigned i = 1; i < processos.size(); ++i) {
+    for(unsigned i = 1; i < processos.size(); ++i) { // i = tarefa
         int count = 0;
-        // carrega as ferramentas necessárias para a próxima tarefa
-        for(unsigned j = 0; j < m; ++j) {
+        for(unsigned j = 0; j < m; ++j) { // j = ferramenta
+            // troca preditiva por desgaste
             if(magazine[j][i] == 1 && carregadas[j] == 1) {
                 if(remainingLife[j] < executionTime[processos[i]]) {
                     trocas++;
                     remainingLife[j] = toolLife[j];
                 }
             }
+            // carrega as ferramentas necessárias para a próxima tarefa
             if((magazine[j][i] == 1) && (carregadas[j] == 0)) {
                 carregadas[j] = 1;
                 ++u;
                 ++count;
+                // essa ferramenta não tem tempo de vida o suficiente para a tarefa? pega outra
+                if(remainingLife[j] < executionTime[i]) {
+                    remainingLife[j] = toolLife[j];
+                }
             }
         }
 
@@ -137,11 +142,36 @@ int KTNS(const vector<int> processos, bool debug = false) {
 
                 if(!removed) {
                     int min = numeric_limits<int>::max();
+                    int index;
 
                     for(unsigned j = 0; j < m; ++j) {
                         if(carregadas[j] == 1 && magazine[j][i] != 1 && prioridades[j][i] > 0) {
                             // próxima vez que a ferramenta j será usada
                             int nextIndex = i + prioridades[j][i];
+
+                            int current = remainingLife[j] - executionTime[processos[nextIndex]];
+
+                            if(current < min) {
+                                min = current;
+                                index = j;
+                            }
+
+                        }
+                    }
+
+                    // se a ferramenta index não tiver tempo suficiente para realizar a sua próxima tarefa, remove ela de uma vez
+                    if(min <= 0) {
+                        remove = index;
+                        remainingLife[index] = toolLife[index];
+                    } else {
+                        min = 0;
+                        for (unsigned j = 0; j < m; ++j) {
+                            if (magazine[j][i] != 1){
+                                if ((prioridades[j][i] > min) && carregadas[j] == 1) {
+                                    min = prioridades[j][i];
+                                    remove = j;
+                                }
+                            }
                         }
                     }
                 }
