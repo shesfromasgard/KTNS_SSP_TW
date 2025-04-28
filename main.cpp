@@ -72,12 +72,6 @@ int KTNS(const vector<int> processos, bool debug = false) {
         // preenche o vetor magazine
 		for (unsigned i = 0; i < processos.size(); i++) {
             magazine[j][i] = matrix[j][processos[i]];
-            if (debug) {
-                cout << magazine[j][i] << " ";
-            }
-        }
-        if (debug) {
-            cout << endl;
         }
 	}
 	// Preenche a matriz de prioridades
@@ -118,10 +112,6 @@ int KTNS(const vector<int> processos, bool debug = false) {
                 carregadas[j] = 1;
                 ++u;
                 ++count;
-                // essa ferramenta não tem tempo de vida o suficiente para a tarefa? pega outra
-                if(remainingLife[j] < executionTime[i]) {
-                    remainingLife[j] = toolLife[j];
-                }
             }
         }
 
@@ -155,12 +145,11 @@ int KTNS(const vector<int> processos, bool debug = false) {
                                 min = current;
                                 index = j;
                             }
-
                         }
                     }
 
                     // se a ferramenta index não tiver tempo suficiente para realizar a sua próxima tarefa, remove ela de uma vez
-                    if(min <= 0) {
+                    if(min < 0) {
                         remove = index;
                         remainingLife[index] = toolLife[index];
                     } else {
