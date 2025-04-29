@@ -1,8 +1,6 @@
 {
     "files.associations": {
         "*.cpp": "cpp",
-        "iostream": "cpp",
-        "ostream": "cpp",
-        "limits": "cpp"
+        "algorithm": "cpp"
     }
 }
