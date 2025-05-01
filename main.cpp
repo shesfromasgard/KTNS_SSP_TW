@@ -65,7 +65,6 @@ int KTNS(const vector<int> processos, bool debug = false) {
 		carregadas[j] = matrix[j][processos[0]];
 		if (matrix[j][processos[0]] == 1) {
 			++u;
-            ++trocas;
             // já decrementa o tempo de execução da tarefa 0 das ferramentas carregadas
             remainingLife[j] -= executionTime[processos[0]];
         }
@@ -98,7 +97,6 @@ int KTNS(const vector<int> processos, bool debug = false) {
 	}
 
     for(unsigned i = 1; i < processos.size(); ++i) { // i = tarefa
-        int count = 0;
         for(unsigned j = 0; j < m; ++j) { // j = ferramenta
             // troca preditiva por desgaste
             if(magazine[j][i] == 1 && carregadas[j] == 1) {
@@ -111,55 +109,50 @@ int KTNS(const vector<int> processos, bool debug = false) {
             if((magazine[j][i] == 1) && (carregadas[j] == 0)) {
                 carregadas[j] = 1;
                 ++u;
-                ++count;
+                if(remainingLife[j] < executionTime[i]) 
+                    remainingLife[j] = toolLife[j];
             }
         }
+        while(u > c) {
+            int remove = -1;
+            bool removed = false;
 
-        if(u <= c) {
-            trocas += count;
-        } else {
-            while(u > c) {
-                int remove = -1;
-                bool removed = false;
+            for(unsigned j = 0; j < m; ++j) {
+                if(carregadas[j] == 1 && magazine[j][i] != 1 && prioridades[j][i] == -1) {
+                    remove = j;
+                    removed = true;
+                    break;
+                }
+            }
+
+            if(!removed) {
+                int min = numeric_limits<int>::max();
+                int index;
 
                 for(unsigned j = 0; j < m; ++j) {
-                    if(carregadas[j] == 1 && magazine[j][i] != 1 && prioridades[j][i] == -1) {
-                        remove = j;
-                        removed = true;
-                        break;
+                    if(carregadas[j] == 1 && magazine[j][i] != 1 && prioridades[j][i] > 0) {
+                        // próxima vez que a ferramenta j será usada
+                        int nextIndex = i + prioridades[j][i];
+
+                        int current = remainingLife[j] - executionTime[processos[nextIndex]];
+
+                        if(current < min) {
+                            min = current;
+                            index = j;
+                        }
                     }
                 }
 
-                if(!removed) {
-                    int min = numeric_limits<int>::max();
-                    int index;
-
-                    for(unsigned j = 0; j < m; ++j) {
-                        if(carregadas[j] == 1 && magazine[j][i] != 1 && prioridades[j][i] > 0) {
-                            // próxima vez que a ferramenta j será usada
-                            int nextIndex = i + prioridades[j][i];
-
-                            int current = remainingLife[j] - executionTime[processos[nextIndex]];
-
-                            if(current < min) {
-                                min = current;
-                                index = j;
-                            }
-                        }
-                    }
-
-                    // se a ferramenta index não tiver tempo suficiente para realizar a sua próxima tarefa, remove ela de uma vez
-                    if(min < 0) {
-                        remove = index;
-                        remainingLife[index] = toolLife[index];
-                    } else {
-                        min = 0;
-                        for (unsigned j = 0; j < m; ++j) {
-                            if (magazine[j][i] != 1){
-                                if ((prioridades[j][i] > min) && carregadas[j] == 1) {
-                                    min = prioridades[j][i];
-                                    remove = j;
-                                }
+                // se a ferramenta index não tiver tempo suficiente para realizar a sua próxima tarefa, remove ela de uma vez
+                if(min < 0) {
+                    remove = index;
+                } else {
+                    min = 0;
+                    for (unsigned j = 0; j < m; ++j) {
+                        if (magazine[j][i] != 1){
+                            if ((prioridades[j][i] > min) && carregadas[j] == 1) {
+                                min = prioridades[j][i];
+                                remove = j;
                             }
                         }
                     }
@@ -178,6 +171,6 @@ int KTNS(const vector<int> processos, bool debug = false) {
         }
     }
 
-    return trocas;
+    return trocas + c;
 
 }
